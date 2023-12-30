@@ -416,7 +416,7 @@ where
     }
 }
 
-impl<T, D> Adjunct for Point<T, D>
+impl<T, D> Adjunct for OPoint<T, D>
 where
     T: Scalar,
     D: DimName,
@@ -425,7 +425,7 @@ where
     type Item = T;
 }
 
-impl<T, D> AffineSpace for Point<T, D>
+impl<T, D> AffineSpace for OPoint<T, D>
 where
     T: AbsDiffEq + AddAssign + MulAssign + NumCast + Real + Scalar + SubAssign,
     D: DimName,
@@ -435,7 +435,7 @@ where
     type Translation = VectorN<T, D>;
 }
 
-impl<T, D> AsPosition for Point<T, D>
+impl<T, D> AsPosition for OPoint<T, D>
 where
     Self: EuclideanSpace,
     T: Scalar,
@@ -449,7 +449,7 @@ where
     }
 }
 
-impl<T, D> AsPositionMut for Point<T, D>
+impl<T, D> AsPositionMut for OPoint<T, D>
 where
     Self: EuclideanSpace,
     T: Scalar,
@@ -461,7 +461,7 @@ where
     }
 }
 
-impl<T, D> Converged for Point<T, D>
+impl<T, D> Converged for OPoint<T, D>
 where
     T: Scalar,
     D: DimName,
@@ -472,19 +472,19 @@ where
     }
 }
 
-impl<T, D> Extend<Point<T, DimNameSum<D, U1>>> for Point<T, D>
+impl<T, D> Extend<OPoint<T, DimNameSum<D, U1>>> for OPoint<T, D>
 where
     T: Scalar,
     D: DimName + DimNameAdd<U1>,
     DefaultAllocator: Allocator<T, D> + Allocator<T, DimNameSum<D, U1>>,
     VectorN<T, D>: Adjunct<Item = T> + Extend<VectorN<T, DimNameSum<D, U1>>>,
 {
-    fn extend(self, x: T) -> Point<T, DimNameSum<D, U1>> {
+    fn extend(self, x: T) -> OPoint<T, DimNameSum<D, U1>> {
         self.coords.extend(x).into()
     }
 }
 
-impl<T, D> EuclideanSpace for Point<T, D>
+impl<T, D> EuclideanSpace for OPoint<T, D>
 where
     T: AbsDiffEq + AddAssign + MulAssign + NumCast + Real + Scalar + SubAssign,
     D: DimName,
@@ -504,7 +504,7 @@ where
     }
 }
 
-impl<T, D> FiniteDimensional for Point<T, D>
+impl<T, D> FiniteDimensional for OPoint<T, D>
 where
     T: Scalar,
     D: DimName,
@@ -514,7 +514,7 @@ where
     type N = D::Value;
 }
 
-impl<T, D> Fold for Point<T, D>
+impl<T, D> Fold for OPoint<T, D>
 where
     T: Scalar,
     D: DimName,
@@ -528,7 +528,7 @@ where
     }
 }
 
-impl<T, D> FromItems for Point<T, D>
+impl<T, D> FromItems for OPoint<T, D>
 where
     T: Scalar,
     D: DimName,
@@ -542,7 +542,7 @@ where
     }
 }
 
-impl<T, D> Interpolate for Point<T, D>
+impl<T, D> Interpolate for OPoint<T, D>
 where
     T: Num + NumCast + Scalar,
     D: DimName,
@@ -579,14 +579,14 @@ where
     }
 }
 
-impl<T, U, D> Map<U> for Point<T, D>
+impl<T, U, D> Map<U> for OPoint<T, D>
 where
     T: Scalar,
     U: Scalar,
     D: DimName,
     DefaultAllocator: Allocator<T, D> + Allocator<U, D>,
 {
-    type Output = Point<U, D>;
+    type Output = OPoint<U, D>;
 
     fn map<F>(self, f: F) -> Self::Output
     where
@@ -596,27 +596,27 @@ where
     }
 }
 
-impl<T, D> Truncate<Point<T, DimNameDiff<D, U1>>> for Point<T, D>
+impl<T, D> Truncate<OPoint<T, DimNameDiff<D, U1>>> for OPoint<T, D>
 where
     T: Scalar,
     D: DimName + DimNameSub<U1>,
     DefaultAllocator: Allocator<T, D> + Allocator<T, DimNameDiff<D, U1>>,
     VectorN<T, D>: Adjunct<Item = T> + Truncate<VectorN<T, DimNameDiff<D, U1>>>,
 {
-    fn truncate(self) -> (Point<T, DimNameDiff<D, U1>>, T) {
+    fn truncate(self) -> (OPoint<T, DimNameDiff<D, U1>>, T) {
         let (vector, x) = self.coords.truncate();
         (vector.into(), x)
     }
 }
 
-impl<T, U, D> ZipMap<U> for Point<T, D>
+impl<T, U, D> ZipMap<U> for OPoint<T, D>
 where
     T: Scalar,
     U: Scalar,
     D: DimName,
     DefaultAllocator: Allocator<T, D> + Allocator<U, D>,
 {
-    type Output = Point<U, D>;
+    type Output = OPoint<U, D>;
 
     fn zip_map<F>(self, other: Self, f: F) -> Self::Output
     where
