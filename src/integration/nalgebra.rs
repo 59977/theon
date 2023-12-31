@@ -141,12 +141,13 @@ where
 impl<T, R, C> FiniteDimensional for MatrixMN<T, R, C>
 where
     T: Scalar,
-    R: DimName + DimNameMax<C> + DimNameMin<C, Output = U1>,
-    <DimNameMaximum<R, C> as DimName>::Value: NonZero,
-    C: DimName,
+    R: DimName + DimNameMax<C> + DimNameMin<C, Output = U1> + ToTypenum,
+    <DimNameMaximum<R, C> as ToTypenum>::Typenum: NonZero,
+    C: DimName + ToTypenum,
     DefaultAllocator: Allocator<T, R, C>,
+    <R as nalgebra::DimNameMax<C>>::Output: nalgebra::ToTypenum
 {
-    type N = <DimNameMaximum<R, C> as DimName>::Value;
+    type N = <DimNameMaximum<R, C> as ToTypenum>::Typenum;
 }
 
 impl<T, R, C> Fold for MatrixMN<T, R, C>
@@ -468,7 +469,7 @@ where
     DefaultAllocator: Allocator<T, D>,
 {
     fn converged(value: Self::Item) -> Self {
-        Point::from(VectorN::<T, D>::converged(value))
+        OPoint::from(VectorN::<T, D>::converged(value))
     }
 }
 
@@ -487,8 +488,8 @@ where
 impl<T, D> EuclideanSpace for OPoint<T, D>
 where
     T: AbsDiffEq + AddAssign + MulAssign + NumCast + Real + Scalar + SubAssign,
-    D: DimName,
-    D::Value: NonZero,
+    D: DimName + ToTypenum,
+    D::Typenum: NonZero,
     DefaultAllocator: Allocator<T, D>,
     <DefaultAllocator as Allocator<T, D>>::Buffer: Copy,
     VectorN<T, D>: FiniteDimensional<N = Self::N>,
@@ -496,7 +497,7 @@ where
     type CoordinateSpace = VectorN<T, D>;
 
     fn origin() -> Self {
-        Point::<T, D>::origin()
+        OPoint::<T, D>::origin()
     }
 
     fn into_coordinates(self) -> Self::CoordinateSpace {
@@ -507,11 +508,11 @@ where
 impl<T, D> FiniteDimensional for OPoint<T, D>
 where
     T: Scalar,
-    D: DimName,
-    D::Value: NonZero,
+    D: DimName + ToTypenum,
+    D::Typenum: NonZero,
     DefaultAllocator: Allocator<T, D>,
 {
-    type N = D::Value;
+    type N = D::Typenum;
 }
 
 impl<T, D> Fold for OPoint<T, D>
@@ -538,7 +539,7 @@ where
     where
         I: IntoIterator<Item = Self::Item>,
     {
-        Some(Point::from(VectorN::from_iterator(items)))
+        Some(OPoint::from(VectorN::from_iterator(items)))
     }
 }
 
@@ -551,7 +552,7 @@ where
     type Output = Self;
 
     fn lerp(self, other: Self, f: R64) -> Self::Output {
-        Point::from(self.coords.lerp(other.coords, f))
+        OPoint::from(self.coords.lerp(other.coords, f))
     }
 }
 
@@ -592,7 +593,7 @@ where
     where
         F: FnMut(Self::Item) -> U,
     {
-        Point::from(self.coords.map(f))
+        OPoint::from(self.coords.map(f))
     }
 }
 
@@ -622,6 +623,6 @@ where
     where
         F: FnMut(Self::Item, Self::Item) -> U,
     {
-        Point::from(self.coords.zip_map(other.coords, f))
+        OPoint::from(self.coords.zip_map(other.coords, f))
     }
 }
